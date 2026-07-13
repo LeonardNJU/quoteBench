@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use QuoteBench in research, reporting, evaluation, derivative benchmarks, or public comparisons, please cite this work. Formal paper metadata is pending."
+title: "QuoteBench: A Benchmark Isolating Shell Quoting/Escaping Skill in LLM Agents"
+authors:
+  - name: "QuoteBench authors"
+year: 2026
+license: "Apache-2.0"
+repository-code: "https://github.com/LeonardNJU/quoteBench"

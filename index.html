@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuoteBench</title>
+  <meta name="description" content="QuoteBench isolates shell quoting and escaping skill in LLM agents.">
+  <meta property="og:title" content="QuoteBench">
+  <meta property="og:description" content="A benchmark for shell quoting and escaping skill in LLM agents.">
+  <meta property="og:image" content="docs/paper/figures/fig1_contract_collapse.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15171a;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --soft: #f1efe8;
+      --line: #ded9cc;
+      --muted: #68645b;
+      --teal: #0e766b;
+      --blue: #2558d8;
+      --coral: #c44a32;
+      --gold: #b77a13;
+      --shadow: 0 24px 70px rgba(28, 24, 18, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(21, 23, 26, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(21, 23, 26, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(222, 217, 204, 0.8);
+      background: rgba(251, 250, 247, 0.86);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0;
+      text-decoration: none;
+    }
+
+    .navlinks {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .navlinks a,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .navlinks a:hover {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .button.primary {
+      color: #fff;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .button.secondary {
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .hero {
+      width: min(1100px, calc(100% - 80px));
+      margin: 0 auto;
+      padding: 58px 0 52px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(440px, 1fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 640px;
+      font-size: clamp(52px, 4.4vw, 72px);
+      line-height: 0.9;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 24px 0 0;
+      max-width: 650px;
+      color: #3e403e;
+      font-size: clamp(19px, 2.4vw, 25px);
+      line-height: 1.35;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .hero-chart {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-chart img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .chart-callout {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .metric-strip {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .metrics {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.18);
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .metric {
+      min-height: 138px;
+      padding: 22px;
+      background: var(--ink);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 9px;
+      font-size: clamp(30px, 3.1vw, 42px);
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .metric span {
+      display: block;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .metric:nth-child(3) strong,
+    .metric:nth-child(4) strong {
+      font-size: clamp(30px, 2.7vw, 36px);
+    }
+
+    .section {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.7fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-head p,
+    .body-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .findings {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .finding {
+      min-height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .tag.coral { background: var(--coral); }
+    .tag.blue { background: var(--blue); }
+    .tag.teal { background: var(--teal); }
+
+    .finding h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .finding p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 34px rgba(28, 24, 18, 0.08);
+    }
+
+    figure.wide {
+      grid-column: 1 / -1;
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    figcaption strong {
+      color: var(--ink);
+    }
+
+    .run-band {
+      background: var(--soft);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .run-grid {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 60px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(420px, 1fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      padding: 22px;
+      border-radius: 14px;
+      background: #101214;
+      color: #f6f1e8;
+      box-shadow: var(--shadow);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .docs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .doc-link {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+    }
+
+    .doc-link strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .doc-link span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 46px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1120px) {
+      .hero,
+      .section-head,
+      .run-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .hero-chart {
+        max-width: 760px;
+      }
+
+      .metrics,
+      .findings,
+      .docs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .nav {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .navlinks a:not(.button) {
+        display: none;
+      }
+
+      .navlinks .button {
+        min-height: 34px;
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+
+      .hero,
+      .section,
+      .run-grid,
+      footer,
+      .metrics {
+        width: min(360px, calc(100vw - 28px));
+        margin-left: 14px;
+        margin-right: auto;
+      }
+
+      .metrics,
+      .findings,
+      .charts,
+      .docs {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        min-height: 108px;
+      }
+
+      .metric strong {
+        font-size: 31px;
+      }
+
+      .hero-chart {
+        margin-top: 4px;
+        padding: 8px;
+      }
+
+      .hero-chart img {
+        min-width: 520px;
+        transform: translateX(-96px);
+      }
+
+      figcaption {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#">QuoteBench</a>
+      <div class="navlinks">
+        <a href="#results">Results</a>
+        <a href="#run">Run</a>
+        <a href="spec.html">Spec</a>
+        <a class="button primary" href="https://github.com/LeonardNJU/quoteBench">GitHub</a>
+      </div>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">LLM agent evaluation</p>
+      <h1>QuoteBench</h1>
+      <p class="lead">A focused benchmark for the shell quoting and escaping failures that broad coding benchmarks usually hide.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/LeonardNJU/quoteBench">View repository</a>
+        <a class="button secondary" href="#run">Run the benchmark</a>
+        <a class="button secondary" href="datasheet.html">Read datasheet</a>
+      </div>
+    </div>
+    <div class="hero-chart" aria-label="Contract collapse headline chart">
+      <img src="docs/paper/figures/fig1_contract_collapse.png" alt="Raw vs wrapped pass rates across models">
+      <div class="chart-callout">Wrapped harnesses expose hidden quoting failures that raw shell execution can miss.</div>
+    </div>
+  </header>
+
+  <section class="metric-strip" aria-label="Benchmark summary">
+    <div class="metrics">
+      <div class="metric"><strong>56 tasks</strong><span>frozen, execution-verified core</span></div>
+      <div class="metric"><strong>12 systems</strong><span>frontier, proprietary, and open-weight models</span></div>
+      <div class="metric"><strong>up to -64 pts</strong><span>raw-to-wrapped contract collapse</span></div>
+      <div class="metric"><strong>100% oracle</strong><span>single-command solvability validation</span></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <h2>What QuoteBench Isolates</h2>
+        <p>Each task asks for one bash command. Scoring checks final state, not command text, so models can solve the task however they want as long as they preserve the exact bytes.</p>
+      </div>
+      <div class="findings">
+        <article class="finding">
+          <span class="tag coral">Contract</span>
+          <h3>Raw shell skill is not enough.</h3>
+          <p>The same command can fail when a harness wraps it in another quoting layer. QuoteBench measures raw, JSON, and wrapped transport separately.</p>
+        </article>
+        <article class="finding">
+          <span class="tag blue">Effort</span>
+          <h3>Reasoning budget can saturate.</h3>
+          <p>Some models spend more generated tokens without improving accuracy; others convert effort into concrete gains.</p>
+        </article>
+        <article class="finding">
+          <span class="tag teal">Reliability</span>
+          <h3>pass@1 hides tail risk.</h3>
+          <p>Repeated trials expose whether a model is consistently safe on byte-exact shell tasks, not merely lucky once.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="section-head">
+        <h2>Headline Charts</h2>
+        <p>The public repository includes the benchmark core, scorer, replay path, datasheet, and current headline figures.</p>
+      </div>
+      <div class="charts">
+        <figure class="wide">
+          <img src="docs/paper/figures/fig2_effort_saturation.png" alt="Accuracy versus generated token cost under wrapped contract">
+          <figcaption><strong>Effort saturation.</strong><span>Accuracy improves only when extra computation is usable for the quoting task.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="docs/paper/figures/fig3_size_gradient.png" alt="Qwen thinking toggle by size">
+          <figcaption><strong>Thinking toggle.</strong><span>Mid-capability models gain the most.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="docs/paper/figures/fig4_reliability.png" alt="pass@1 versus pass^k reliability">
+          <figcaption><strong>Reliability.</strong><span>pass@1 can overstate tail performance.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="run-band" id="run">
+      <div class="run-grid">
+        <div>
+          <h2>Run It Locally</h2>
+          <p class="body-copy">The core benchmark uses Python standard library only. Use the Docker executor for untrusted model output and pinned GNU userland.</p>
+        </div>
+        <pre><code>python3 -m quotebench validate
+OPENAI_BASE_URL=http://localhost:8000/v1 OPENAI_API_KEY=... \
+  python3 -m quotebench run --adapter openai --model MODEL \
+  --contract wrapped --executor docker --out results/run.jsonl
+python3 -m quotebench score results/run.jsonl</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Project Files</h2>
+        <p>Start from the spec if you want the benchmark design, or the datasheet if you need release metadata.</p>
+      </div>
+      <div class="docs">
+        <a class="doc-link" href="quickstart.html"><strong>Quickstart</strong><span>Commands for validation, model runs, and scoring.</span></a>
+        <a class="doc-link" href="spec.html"><strong>Specification</strong><span>Task model, contracts, metrics, and validity checks.</span></a>
+        <a class="doc-link" href="relatedwork.html"><strong>Related Work</strong><span>Why quoting is not isolated by existing terminal benchmarks.</span></a>
+        <a class="doc-link" href="citation.html"><strong>Citation</strong><span>Citation metadata and attribution guidance.</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Released under Apache-2.0. Author list and formal acknowledgements will be updated with the project paper. If you use QuoteBench in research, reporting, evaluation, derivative benchmarks, or public comparisons, cite the project.
+  </footer>
+</body>
+</html>
