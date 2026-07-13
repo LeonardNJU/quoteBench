@@ -78,7 +78,9 @@ for free from a BSD run (or vice-versa) without losing retry/failure taxonomy.
 ## 6. Figures
 
 The public repository includes the current headline figures under
-`docs/paper/figures/`.
+`docs/paper/figures/`. Run `python3 scripts/analysis/make_figures.py` to
+regenerate both GNU/Linux and BSD/macOS variants; the legacy figure filenames
+point to the GNU reference set.
 
 ## Determinism / notes
 

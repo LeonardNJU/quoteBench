@@ -21,7 +21,7 @@ QuoteBench exposes failures that are easy to miss in broad coding benchmarks:
 
 - Some models are strong under direct shell execution but collapse when the same
   command is transported through a wrapped harness. In the frozen-core GNU run,
-  Gemini-3.5-flash scores 94.6% under `raw` but 58.9% under `wrapped`.
+  Gemini-3.5-flash scores 96.4% under `raw` but 67.9% under `wrapped`.
 - Reasoning budget is not a universal fix: saturated models spend more tokens
   without improving accuracy, while mid-capability models can convert effort
   into large gains.
