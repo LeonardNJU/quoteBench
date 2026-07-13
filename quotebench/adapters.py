@@ -151,10 +151,13 @@ class OpenAIAdapter:
 
     def __init__(self, model: str, max_tokens: int = 4096):
         self.model = model
-        self.max_tokens = max_tokens
+        # QB_OPENAI_MAX_TOKENS overrides the cap — qwen THINKING needs far more than
+        # 4096 (thinking truncates otherwise: I19), so raise it for think runs.
+        self.max_tokens = int(os.environ.get("QB_OPENAI_MAX_TOKENS", max_tokens))
         self.key = os.environ.get("OPENAI_API_KEY", "EMPTY")
         self.base = os.environ.get(
             "OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+        self.timeout = float(os.environ.get("QB_OPENAI_TIMEOUT", "180"))
         # optional extra request fields (e.g. vLLM chat_template_kwargs to turn
         # off qwen thinking): QB_OPENAI_EXTRA_BODY='{"chat_template_kwargs":...}'
         self.extra = json.loads(os.environ.get("QB_OPENAI_EXTRA_BODY", "{}"))
@@ -172,7 +175,7 @@ class OpenAIAdapter:
             headers={"Authorization": f"Bearer {self.key}",
                      "content-type": "application/json"})
         t0 = time.monotonic()
-        with urllib.request.urlopen(req, timeout=180) as r:
+        with urllib.request.urlopen(req, timeout=self.timeout) as r:
             data = json.loads(r.read())
         text = data["choices"][0]["message"]["content"] or ""
         return _gen_from_text(text, _usage_openai(data.get("usage", {})),

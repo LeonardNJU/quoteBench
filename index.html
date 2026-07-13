@@ -316,6 +316,61 @@
       gap: 18px;
     }
 
+    .chart-tabs {
+      width: 100%;
+      margin: 0;
+    }
+
+    .chart-tabs input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tab-controls {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px;
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .tab-controls label {
+      min-width: 124px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chart-section-head .tab-controls {
+      justify-self: end;
+      margin: 0;
+    }
+
+    #charts-gnu:checked ~ .chart-section-head .tab-controls label[for="charts-gnu"],
+    #charts-bsd:checked ~ .chart-section-head .tab-controls label[for="charts-bsd"] {
+      color: #fff;
+      background: var(--ink);
+    }
+
+    .chart-panel {
+      display: none;
+    }
+
+    #charts-gnu:checked ~ .chart-panel.gnu,
+    #charts-bsd:checked ~ .chart-panel.bsd {
+      display: block;
+    }
+
     figure {
       margin: 0;
       border: 1px solid var(--line);
@@ -470,6 +525,20 @@
         grid-template-columns: 1fr;
       }
 
+      .chart-tabs {
+        width: 100%;
+      }
+
+      .tab-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      .tab-controls label {
+        min-width: 0;
+      }
+
       .metric {
         min-height: 108px;
       }
@@ -559,23 +628,51 @@
     </section>
 
     <section class="section" id="results">
-      <div class="section-head">
-        <h2>Headline Charts</h2>
-        <p>The public repository includes the benchmark core, scorer, replay path, datasheet, and current headline figures.</p>
-      </div>
-      <div class="charts">
-        <figure class="wide">
-          <img src="docs/paper/figures/fig2_effort_saturation.png" alt="Accuracy versus generated token cost under wrapped contract">
-          <figcaption><strong>Effort saturation.</strong><span>Accuracy improves only when extra computation is usable for the quoting task.</span></figcaption>
-        </figure>
-        <figure>
-          <img src="docs/paper/figures/fig3_size_gradient.png" alt="Qwen thinking toggle by size">
-          <figcaption><strong>Thinking toggle.</strong><span>Mid-capability models gain the most.</span></figcaption>
-        </figure>
-        <figure>
-          <img src="docs/paper/figures/fig4_reliability.png" alt="pass@1 versus pass^k reliability">
-          <figcaption><strong>Reliability.</strong><span>pass@1 can overstate tail performance.</span></figcaption>
-        </figure>
+      <div class="chart-tabs">
+        <input type="radio" name="chart-toolchain" id="charts-gnu" checked>
+        <input type="radio" name="chart-toolchain" id="charts-bsd">
+        <div class="section-head chart-section-head">
+          <div>
+            <h2>Headline Charts</h2>
+            <p>Switch between the reproducible Linux replay and native macOS execution to inspect the toolchain axis directly.</p>
+          </div>
+          <div class="tab-controls" aria-label="Chart toolchain">
+            <label for="charts-gnu">GNU (Linux)</label>
+            <label for="charts-bsd">BSD (Mac)</label>
+          </div>
+        </div>
+        <div class="chart-panel gnu">
+          <div class="charts">
+            <figure class="wide">
+              <img src="docs/paper/figures/fig2_effort_saturation_gnu.png" alt="GNU Linux accuracy versus generated token cost under wrapped contract">
+              <figcaption><strong>Effort saturation.</strong><span>GNU/Linux replay, using stored model outputs.</span></figcaption>
+            </figure>
+            <figure>
+              <img src="docs/paper/figures/fig3_size_gradient_gnu.png" alt="GNU Linux Qwen thinking toggle by size">
+              <figcaption><strong>Thinking toggle.</strong><span>Linux replay separates model behavior from macOS tool dialect.</span></figcaption>
+            </figure>
+            <figure>
+              <img src="docs/paper/figures/fig4_reliability_gnu.png" alt="GNU Linux pass@1 versus pass^k reliability">
+              <figcaption><strong>Reliability.</strong><span>pass@1 can overstate tail performance.</span></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="chart-panel bsd">
+          <div class="charts">
+            <figure class="wide">
+              <img src="docs/paper/figures/fig2_effort_saturation_bsd.png" alt="BSD Mac accuracy versus generated token cost under wrapped contract">
+              <figcaption><strong>Effort saturation.</strong><span>Native macOS execution with BSD userland.</span></figcaption>
+            </figure>
+            <figure>
+              <img src="docs/paper/figures/fig3_size_gradient_bsd.png" alt="BSD Mac Qwen thinking toggle by size">
+              <figcaption><strong>Thinking toggle.</strong><span>macOS-native results show the userland dialect axis.</span></figcaption>
+            </figure>
+            <figure>
+              <img src="docs/paper/figures/fig4_reliability_bsd.png" alt="BSD Mac pass@1 versus pass^k reliability">
+              <figcaption><strong>Reliability.</strong><span>pass@1 can overstate tail performance.</span></figcaption>
+            </figure>
+          </div>
+        </div>
       </div>
     </section>
 
