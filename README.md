@@ -15,6 +15,9 @@ This file is a map; facts live in `docs/`:
 - license → `LICENSE`
 - citation metadata → `CITATION.cff`
 
+The public repository and project site are synchronized from the private release
+source by GitHub Actions.
+
 ## Results preview
 
 QuoteBench exposes failures that are easy to miss in broad coding benchmarks:
