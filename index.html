@@ -673,7 +673,8 @@
 <tr><td>Qwen3.5-4B</td><td>32.1%</td><td><strong>8.9%</strong></td><td>-23.2</td></tr>
 </tbody></table>
 <p class="lb-note">pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by <code>wrapped</code>. Updated 2026-07-15.</p>
-<p class="lb-note"><strong>Legend</strong> — <code>raw</code>: the model's reply is executed verbatim (<code>bash -c &lt;reply&gt;</code>). <code>wrapped</code>: the reply is interpolated into <code>bash -c "&lt;reply&gt;"</code> before execution — the naive harness transport that adds a second quoting layer (the hostile contract). <strong>&Delta;</strong> = wrapped &minus; raw, the <em>contract drop</em>: accuracy lost when the command must survive that extra layer.</p>
+<p class="lb-note"><strong>Legend</strong> — <code>raw</code>: the reply is executed verbatim (<code>bash -c &lt;reply&gt;</code>). <code>wrapped</code>: the reply is first pasted into <code>bash -c "&lt;reply&gt;"</code> — an extra double-quote layer, exactly what naive agent harnesses do when they transport commands as strings. <em>Example</em>: to write <code>it's done</code> to a file, <code>echo "it's done" &gt; out.txt</code> is correct under <code>raw</code>, but under <code>wrapped</code> the inner quotes and any <code>$</code>/backticks are re-parsed by the outer layer — the model must emit <code>echo \"it's done\" &gt; out.txt</code> or the command runs <em>silently wrong</em> (exit 0, wrong bytes).</p>
+<p class="lb-note"><strong>&Delta;</strong> = wrapped &minus; raw, the <em>contract drop</em>. <strong>Why it matters</strong>: <code>raw</code> is how models look in a demo; <code>wrapped</code> is how they are actually driven inside many agent frameworks. A large drop (e.g. Gemini-3.5-flash 96.4&rarr;67.9) means a model that aces one-shot shell questions still cannot be trusted to drive a shell through a string-transporting harness.</p>
 <!-- LEADERBOARD:END -->
       </div>
     </section>
