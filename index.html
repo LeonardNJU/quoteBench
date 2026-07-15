@@ -651,8 +651,8 @@
       </div>
       <style>
         .lb{width:100%;border-collapse:collapse;font-size:.95rem}
-        .lb th,.lb td{padding:.45rem .8rem;text-align:left;border-bottom:1px solid rgba(127,127,127,.25)}
-        .lb th{font-weight:600}
+        .lb th,.lb td{padding:.45rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+        .lb th{font-weight:600;border-bottom:2px solid #b8ad96}
         .lb tr:first-child td{font-weight:600}
         .lb-note{font-size:.8rem;opacity:.7;margin-top:.5rem}
       </style>
@@ -672,6 +672,7 @@
 <tr><td>Qwen3.5-4B</td><td>32.1%</td><td><strong>8.9%</strong></td><td>-23.2</td></tr>
 </tbody></table>
 <p class="lb-note">pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by <code>wrapped</code>. Updated 2026-07-15.</p>
+<p class="lb-note"><strong>Legend</strong> — <code>raw</code>: the model's reply is executed verbatim (<code>bash -c &lt;reply&gt;</code>). <code>wrapped</code>: the reply is interpolated into <code>bash -c "&lt;reply&gt;"</code> before execution — the naive harness transport that adds a second quoting layer (the hostile contract). <strong>&Delta;</strong> = wrapped &minus; raw, the <em>contract drop</em>: accuracy lost when the command must survive that extra layer.</p>
 <!-- LEADERBOARD:END -->
     </section>
 

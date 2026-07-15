@@ -26,6 +26,8 @@ single `bash -c` command, evaluated under 3 tool contracts (`raw` / `json` /
 | Qwen3.5-4B | 32.1% | **8.9%** | -23.2 |
 
 *pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by `wrapped`. Updated 2026-07-15.*
+
+**Legend** — `raw`: the model's reply is executed verbatim (`bash -c <reply>`). `wrapped`: the reply is interpolated into `bash -c "<reply>"` before execution — the naive harness transport that adds a second quoting layer (the hostile contract). **Δ** = wrapped − raw, the *contract drop*: how much accuracy the model loses when its command must survive that extra layer.
 <!-- LEADERBOARD:END -->
 
 This file is a map; facts live in `docs/`:
