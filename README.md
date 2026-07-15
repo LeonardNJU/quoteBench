@@ -7,6 +7,27 @@ single `bash -c` command, evaluated under 3 tool contracts (`raw` / `json` /
 (benign-control − hostile pass rate; attribution-clean under raw),
 **contract drop** (raw − wrapped), and **reliability gap** (per-trial − pass^k).
 
+## Leaderboard
+
+<!-- LEADERBOARD:START -->
+| model | raw | wrapped | Δ |
+|---|---|---|---|
+| GPT-5.5 | 100.0% | **96.4%** | -3.6 |
+| GPT-5.6 | 96.4% | **96.4%** | +0.0 |
+| Gemini-3.1-pro | 100.0% | **96.4%** | -3.6 |
+| Sonnet-4.6 | 92.9% | **91.1%** | -1.8 |
+| Fable-5 | 91.1% | **87.5%** | -3.6 |
+| Opus-4.8 | 87.5% | **73.8%** | -13.7 |
+| Gemini-3.5-flash | 96.4% | **67.9%** | -28.6 |
+| Haiku-4.5 | 92.9% | **58.9%** | -33.9 |
+| Qwen3.5-27B | 87.5% | **32.1%** | -55.4 |
+| Gemini-3.1-flash-lite | 78.6% | **14.3%** | -64.3 |
+| Qwen3.5-9B | 48.2% | **14.3%** | -33.9 |
+| Qwen3.5-4B | 32.1% | **8.9%** | -23.2 |
+
+*pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by `wrapped`. Updated 2026-07-15.*
+<!-- LEADERBOARD:END -->
+
 This file is a map; facts live in `docs/`:
 
 - design & metrics → `docs/SPEC.md`
