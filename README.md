@@ -25,7 +25,7 @@ single `bash -c` command, evaluated under 3 tool contracts (`raw` / `json` /
 | Qwen3.5-9B | 48.2% | **14.3%** | -33.9 |
 | Qwen3.5-4B | 32.1% | **8.9%** | -23.2 |
 
-*pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by `wrapped`. Updated 2026-07-15.*
+*pass@1 on the 56-task core, GNU/Linux reference toolchain; sorted by `wrapped`. Updated 2026-07-21.*
 
 **Legend** — `raw`: the model's reply is executed verbatim (`bash -c <reply>`). `wrapped`: the reply is first pasted into `bash -c "<reply>"` — an extra double-quote layer, exactly what naive agent harnesses do when they transport commands as strings. *Example*: to write `it's done` to a file, `echo "it's done" > out.txt` is correct under `raw`, but under `wrapped` the inner quotes and any `$`/backticks are re-parsed by the outer layer — the model must emit `echo \"it's done\" > out.txt` or the command runs *silently wrong* (exit 0, wrong bytes). **Δ** = wrapped − raw, the *contract drop*. **Why it matters**: raw is how models look in a demo; wrapped is how they are actually driven inside many agent frameworks. A large drop (e.g. Gemini-3.5-flash 96.4→67.9) means a model that aces one-shot shell questions still cannot be trusted to drive a shell through a string-transporting harness.
 <!-- LEADERBOARD:END -->
