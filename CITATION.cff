@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use QuoteBench in research, reporting, evaluation, derivative benchmarks, or public comparisons, please cite this work."
+title: "QuoteBench: How Matched Scores Can Hide Command-Path Failures"
+authors:
+  - family-names: "Li"
+    given-names: "Shangao"
+    email: "shangao.li@stonybrook.edu"
+    affiliation: "Stony Brook University"
+  - family-names: "Zhang"
+    given-names: "Yao"
+    email: "yaoz720.ai@gmail.com"
+    affiliation: "LMU Munich; Munich Center for Machine Learning"
+  - family-names: "Tresp"
+    given-names: "Volker"
+    email: "tresp@dbs.ifi.lmu.de"
+    affiliation: "LMU Munich; Munich Center for Machine Learning"
+  - family-names: "Yang"
+    given-names: "Yuanyuan"
+    email: "yuanyuan.yang@stonybrook.edu"
+    affiliation: "Stony Brook University"
+version: "1.0.0"
+date-released: "2026-08-07"
+year: 2026
+license: "Apache-2.0"
+repository-code: "https://github.com/LeonardNJU/quoteBench"
+url: "https://quotebench.lsamc.website/"
+preferred-citation:
+  type: article
+  title: "QuoteBench: How Matched Scores Can Hide Command-Path Failures"
+  authors:
+    - family-names: "Li"
+      given-names: "Shangao"
+    - family-names: "Zhang"
+      given-names: "Yao"
+    - family-names: "Tresp"
+      given-names: "Volker"
+    - family-names: "Yang"
+      given-names: "Yuanyuan"
+  year: 2026
+  notes: "Preprint; arXiv identifier to be added upon announcement."

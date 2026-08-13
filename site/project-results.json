@@ -1,0 +1,308 @@
+{
+  "schema": "quotebench-public-summary-v1",
+  "benchmark": {
+    "tasks": 56,
+    "families": 14,
+    "validator_mutations": 197
+  },
+  "mechanism": {
+    "same_window_configurations": 8,
+    "damage_range_pp": [
+      -73.2,
+      -55.4
+    ],
+    "positive_compensation_configurations": 6,
+    "positive_compensation_range_pp": [
+      30.4,
+      60.7
+    ],
+    "rows": [
+      {
+        "model": "GPT-5.6-sol",
+        "RR": 94.6,
+        "RN": 30.4,
+        "NR": 55.4,
+        "NN": 91.1,
+        "damage_pp": -64.3,
+        "compensation_pp": 60.7,
+        "matched_gap_pp": -3.6
+      },
+      {
+        "model": "GPT-5.5",
+        "RR": 100.0,
+        "RN": 28.6,
+        "NR": 50.0,
+        "NN": 89.3,
+        "damage_pp": -71.4,
+        "compensation_pp": 60.7,
+        "matched_gap_pp": -10.7
+      },
+      {
+        "model": "Opus-5",
+        "RR": 96.4,
+        "RN": 30.4,
+        "NR": 42.9,
+        "NN": 89.3,
+        "damage_pp": -66.1,
+        "compensation_pp": 58.9,
+        "matched_gap_pp": -7.1
+      },
+      {
+        "model": "Gemini-3.1-Pro",
+        "RR": 98.2,
+        "RN": 25.0,
+        "NR": 33.9,
+        "NN": 80.4,
+        "damage_pp": -73.2,
+        "compensation_pp": 55.4,
+        "matched_gap_pp": -17.9
+      },
+      {
+        "model": "Gemini-3.5-Flash",
+        "RR": 96.4,
+        "RN": 28.6,
+        "NR": 67.9,
+        "NN": 58.9,
+        "damage_pp": -67.9,
+        "compensation_pp": 30.4,
+        "matched_gap_pp": -37.5
+      },
+      {
+        "model": "Opus-4.8",
+        "RR": 91.1,
+        "RN": 26.8,
+        "NR": 62.5,
+        "NN": 57.1,
+        "damage_pp": -64.3,
+        "compensation_pp": 30.4,
+        "matched_gap_pp": -33.9
+      },
+      {
+        "model": "Qwen3.5-27B",
+        "RR": 85.7,
+        "RN": 30.4,
+        "NR": 83.9,
+        "NN": 30.4,
+        "damage_pp": -55.4,
+        "compensation_pp": 0.0,
+        "matched_gap_pp": -55.4
+      },
+      {
+        "model": "Gemini-3.1-Flash-Lite",
+        "RR": 78.6,
+        "RN": 19.6,
+        "NR": 80.4,
+        "NN": 14.3,
+        "damage_pp": -58.9,
+        "compensation_pp": -5.4,
+        "matched_gap_pp": -64.3
+      }
+    ]
+  },
+  "ranking_reversal": {
+    "strict_reversals": 5,
+    "comparable_pairs": 26,
+    "fraction_pct": 19.2,
+    "rows": [
+      {
+        "pair": "GPT-5.6-sol vs Gemini-3.5-Flash",
+        "raw_winner": "Gemini-3.5-Flash",
+        "raw_scores": "53/56 vs 54/56",
+        "disclosed_winner": "GPT-5.6-sol",
+        "disclosed_scores": "51/56 vs 33/56",
+        "lofo_support": "12/14 families"
+      },
+      {
+        "pair": "GPT-5.6-sol vs Gemini-3.1-Pro",
+        "raw_winner": "Gemini-3.1-Pro",
+        "raw_scores": "53/56 vs 55/56",
+        "disclosed_winner": "GPT-5.6-sol",
+        "disclosed_scores": "51/56 vs 45/56",
+        "lofo_support": "14/14 families"
+      },
+      {
+        "pair": "Opus-5 vs Gemini-3.1-Pro",
+        "raw_winner": "Gemini-3.1-Pro",
+        "raw_scores": "54/56 vs 55/56",
+        "disclosed_winner": "Opus-5",
+        "disclosed_scores": "50/56 vs 45/56",
+        "lofo_support": "13/14 families"
+      },
+      {
+        "pair": "GPT-5.6-sol vs GPT-5.5",
+        "raw_winner": "GPT-5.5",
+        "raw_scores": "53/56 vs 56/56",
+        "disclosed_winner": "GPT-5.6-sol",
+        "disclosed_scores": "51/56 vs 50/56",
+        "lofo_support": "12/14 families"
+      },
+      {
+        "pair": "GPT-5.6-sol vs Opus-5",
+        "raw_winner": "Opus-5",
+        "raw_scores": "53/56 vs 54/56",
+        "disclosed_winner": "GPT-5.6-sol",
+        "disclosed_scores": "51/56 vs 50/56",
+        "lofo_support": "8/14 families"
+      }
+    ]
+  },
+  "robustness": {
+    "three_draw_rows": [
+      {
+        "model": "GPT-5.5",
+        "damage_range_pp": [
+          -71.4,
+          -69.6,
+          -67.9
+        ],
+        "compensation_range_pp": [
+          60.7,
+          60.7,
+          58.9
+        ],
+        "raw_pass3_pct": 98.2,
+        "disclosed_pass3_pct": 75.0
+      },
+      {
+        "model": "GPT-5.6-sol",
+        "damage_range_pp": [
+          -64.3,
+          -66.1,
+          -67.9
+        ],
+        "compensation_range_pp": [
+          60.7,
+          66.1,
+          64.3
+        ],
+        "raw_pass3_pct": 94.6,
+        "disclosed_pass3_pct": 89.3
+      },
+      {
+        "model": "Gemini-3.1-pro",
+        "damage_range_pp": [
+          -73.2,
+          -73.2,
+          -75.0
+        ],
+        "compensation_range_pp": [
+          55.4,
+          58.9,
+          55.4
+        ],
+        "raw_pass3_pct": 98.2,
+        "disclosed_pass3_pct": 75.0
+      }
+    ],
+    "nearby_transport_rows": [
+      {
+        "model": "GPT-5.6-sol",
+        "nested_targeted_pct": 91.1,
+        "single_quoted_pct": 12.5,
+        "double_nested_pct": 53.6
+      },
+      {
+        "model": "GPT-5.5",
+        "nested_targeted_pct": 89.3,
+        "single_quoted_pct": 16.1,
+        "double_nested_pct": 48.2
+      },
+      {
+        "model": "Opus-5",
+        "nested_targeted_pct": 89.3,
+        "single_quoted_pct": 14.3,
+        "double_nested_pct": 41.1
+      },
+      {
+        "model": "Gemini-3.1-Pro",
+        "nested_targeted_pct": 80.4,
+        "single_quoted_pct": 17.9,
+        "double_nested_pct": 25.0
+      },
+      {
+        "model": "Gemini-3.5-Flash",
+        "nested_targeted_pct": 58.9,
+        "single_quoted_pct": 26.8,
+        "double_nested_pct": 37.5
+      },
+      {
+        "model": "Opus-4.8",
+        "nested_targeted_pct": 57.1,
+        "single_quoted_pct": 19.6,
+        "double_nested_pct": 26.8
+      },
+      {
+        "model": "Qwen3.5-27B",
+        "nested_targeted_pct": 30.4,
+        "single_quoted_pct": 19.6,
+        "double_nested_pct": 30.4
+      },
+      {
+        "model": "Gemini-3.1-Flash-Lite",
+        "nested_targeted_pct": 14.3,
+        "single_quoted_pct": 33.9,
+        "double_nested_pct": 14.3
+      }
+    ]
+  },
+  "mitigation": {
+    "temporary_script_rows": [
+      {
+        "model": "GPT-5.6-sol",
+        "nested": "8/42",
+        "temporary_script": "41/42",
+        "gain_pp": 78.6
+      },
+      {
+        "model": "Opus-4.8",
+        "nested": "7/42",
+        "temporary_script": "40/42",
+        "gain_pp": 78.6
+      },
+      {
+        "model": "Qwen3.5-27B",
+        "nested": "9/42",
+        "temporary_script": "30/42",
+        "gain_pp": 50.0
+      }
+    ],
+    "typed_pilot_scope": "six naturally typed same-family payload groups; exploratory",
+    "typed_pilot_rows": [
+      {
+        "model": "GPT-5.6-sol",
+        "raw_pct": 100.0,
+        "temporary_script_pct": 100.0,
+        "typed_pct": 94.4
+      },
+      {
+        "model": "Opus-4.8",
+        "raw_pct": 94.4,
+        "temporary_script_pct": 94.4,
+        "typed_pct": 44.4
+      }
+    ]
+  },
+  "rollout_release": {
+    "dataset_version": "quotebench-rollouts-1.0.0",
+    "records": 12999,
+    "arm_files": 33,
+    "campaigns": [
+      "nested-effort-ladder",
+      "raw-effort-ladder",
+      "raw-vs-native",
+      "raw-vs-nested"
+    ],
+    "gates": {
+      "G1_unique_rollout_ids": true,
+      "G2_executions_match_rollout": true,
+      "G3_no_banned_strings": true,
+      "G4_external_names_no_host_paths": true,
+      "G5_public_model_ids": true,
+      "G6_finish_reason_vocabulary": true,
+      "G7_every_rollout_carries_a_reply": true,
+      "G8_no_internal_code_names": true,
+      "G9_same_window_mechanism_complete": true
+    },
+    "hf_url": "https://huggingface.co/datasets/lsamc/QuoteBench-Rollouts"
+  }
+}

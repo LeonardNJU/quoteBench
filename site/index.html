@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuoteBench — How Matched Scores Can Hide Command-Path Failures</title>
+  <meta name="description" content="Execution-verified benchmark and mechanism analysis for shell command-path reliability.">
+  <meta name="author" content="Shangao Li">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#0e766b">
+  <meta name="application-name" content="QuoteBench">
+  <meta name="apple-mobile-web-app-title" content="QuoteBench">
+  <link rel="canonical" href="https://quotebench.lsamc.website/">
+  <link rel="icon" href="favicon.ico?v=20260715-4" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260715-4">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260715-4">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260715-4">
+  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="QuoteBench">
+  <meta property="og:title" content="QuoteBench — How Matched Scores Can Hide Command-Path Failures">
+  <meta property="og:description" content="Execution-verified benchmark and mechanism analysis for shell command-path reliability.">
+  <meta property="og:url" content="https://quotebench.lsamc.website/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://quotebench.lsamc.website/og-image.png?v=20260715-4">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="QuoteBench project card">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@LeonardNJU">
+  <meta name="twitter:title" content="QuoteBench — How Matched Scores Can Hide Command-Path Failures">
+  <meta name="twitter:description" content="Execution-verified benchmark and mechanism analysis for shell command-path reliability.">
+  <meta name="twitter:image" content="https://quotebench.lsamc.website/og-image.png?v=20260715-4">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"QuoteBench","headline":"QuoteBench — How Matched Scores Can Hide Command-Path Failures","description":"Execution-verified benchmark and mechanism analysis for shell command-path reliability.","url":"https://quotebench.lsamc.website/","image":"https://quotebench.lsamc.website/og-image.png?v=20260715-4","inLanguage":"en","author":{"@type":"Person","name":"Shangao Li","url":"https://lsamc.website/"},"publisher":{"@type":"Person","name":"Shangao Li","url":"https://lsamc.website/"},"codeRepository":"https://github.com/LeonardNJU/quoteBench","license":"https://github.com/LeonardNJU/quoteBench/blob/main/LICENSE","programmingLanguage":"Python"}</script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+    :root {
+      color-scheme: light;
+      --ink: #15171a;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --soft: #f1efe8;
+      --line: #ded9cc;
+      --muted: #68645b;
+      --teal: #0e766b;
+      --blue: #2558d8;
+      --coral: #c44a32;
+      --gold: #b77a13;
+      --shadow: 0 24px 70px rgba(28, 24, 18, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(21, 23, 26, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(21, 23, 26, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(222, 217, 204, 0.8);
+      background: rgba(251, 250, 247, 0.86);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .navlinks {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .navlinks a,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .navlinks a:hover {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .button.primary {
+      color: #fff;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .button.secondary {
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .hero {
+      width: min(1120px, calc(100% - 72px));
+      margin: 0 auto;
+      padding: 68px 0 56px;
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(430px, 1fr);
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 17px;
+      color: var(--teal);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 640px;
+      font-size: clamp(55px, 7vw, 88px);
+      line-height: 0.92;
+      letter-spacing: -0.055em;
+    }
+
+    .lead {
+      margin: 24px 0 0;
+      max-width: 650px;
+      color: #3e403e;
+      font-size: clamp(17px, 1.75vw, 22px);
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .hero-chart {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-chart img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .chart-callout {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .metric-strip {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .metrics {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.18);
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .metric {
+      min-height: 134px;
+      padding: 22px;
+      background: var(--ink);
+    }
+
+    .metric strong {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .metric-value {
+      color: #fff;
+      font-size: clamp(35px, 3.8vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.055em;
+    }
+
+    .metric-unit {
+      color: rgba(255, 255, 255, 0.82);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(15px, 1.35vw, 18px);
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: lowercase;
+    }
+
+    .metric > span {
+      display: block;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .section {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 66px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.7fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-head p,
+    .body-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .findings {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .finding {
+      min-height: 190px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 23px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .tag.coral { background: var(--coral); }
+    .tag.blue { background: var(--blue); }
+    .tag.teal { background: var(--teal); }
+
+    .finding h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+    }
+
+    .finding p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .chart-tabs {
+      width: 100%;
+      margin: 0;
+    }
+
+    .chart-tabs input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tab-controls {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px;
+      margin: 0 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .tab-controls label {
+      min-width: 124px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chart-section-head .tab-controls {
+      justify-self: end;
+      margin: 0;
+    }
+
+    #charts-gnu:checked ~ .chart-section-head .tab-controls label[for="charts-gnu"],
+    #charts-bsd:checked ~ .chart-section-head .tab-controls label[for="charts-bsd"] {
+      color: #fff;
+      background: var(--ink);
+    }
+
+    .chart-panel {
+      display: none;
+    }
+
+    #charts-gnu:checked ~ .chart-panel.gnu,
+    #charts-bsd:checked ~ .chart-panel.bsd {
+      display: block;
+    }
+
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 34px rgba(28, 24, 18, 0.08);
+    }
+
+    figure.wide {
+      grid-column: 1 / -1;
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    figcaption strong {
+      color: var(--ink);
+    }
+
+    .run-band {
+      background: var(--soft);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .run-grid {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 60px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(420px, 1fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    pre {
+      margin: 0;
+      overflow-x: auto;
+      padding: 22px;
+      border-radius: 14px;
+      background: #101214;
+      color: #f6f1e8;
+      box-shadow: var(--shadow);
+    }
+
+    code {
+      font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .docs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .doc-link {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+    }
+
+    .doc-link strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .doc-link span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 46px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1120px) {
+      .hero,
+      .section-head,
+      .run-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .hero-chart {
+        max-width: 760px;
+      }
+
+      .metrics,
+      .findings,
+      .docs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .nav {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .navlinks a:not(.button) {
+        display: none;
+      }
+
+      .navlinks .button {
+        min-height: 34px;
+        padding: 7px 10px;
+        font-size: 13px;
+      }
+
+      .hero,
+      .section,
+      .run-grid,
+      footer,
+      .metrics {
+        width: min(360px, calc(100vw - 28px));
+        margin-left: 14px;
+        margin-right: auto;
+      }
+
+      .metrics,
+      .findings,
+      .charts,
+      .docs {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-tabs {
+        width: 100%;
+      }
+
+      .tab-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      .tab-controls label {
+        min-width: 0;
+      }
+
+      .metric {
+        min-height: 108px;
+      }
+
+      .metric strong {
+        font-size: 31px;
+      }
+
+      .hero-chart {
+        margin-top: 4px;
+        padding: 8px;
+      }
+
+      .hero-chart img {
+        min-width: 520px;
+        transform: translateX(-96px);
+      }
+
+      figcaption {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#">QuoteBench</a>
+      <div class="navlinks">
+        <a href="#results">Results</a>
+        <a href="#run">Run</a>
+        <a href="spec.html">Spec</a>
+        <a class="button primary" href="https://github.com/LeonardNJU/quoteBench">GitHub</a>
+      </div>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">LLM agent evaluation</p>
+      <h1>QuoteBench</h1>
+      <p class="lead">An execution-verified benchmark that crosses generation contract with command transport, exposing failures that matched-path scores can hide.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/LeonardNJU/quoteBench">View repository</a>
+        <a class="button secondary" href="https://huggingface.co/datasets/lsamc/QuoteBench-Rollouts">Download rollouts</a>
+        <a class="button secondary" href="#run">Run the benchmark</a>
+        <a class="button secondary" href="datasheet.html">Read datasheet</a>
+      </div>
+    </div>
+    <div class="hero-chart" aria-label="Native tool boundary headline chart">
+      <img src="assets/native-effects.png" alt="Native minus raw pass-rate effects per model on BSD and GNU">
+      <div class="chart-callout">The structured tool boundary is not neutral: it helps some models, hurts others, and can flip sign across execution dialects.</div>
+    </div>
+  </header>
+
+  <section class="metric-strip" aria-label="Benchmark summary">
+    <div class="metrics">
+      <div class="metric"><strong><span class="metric-value">56</span><span class="metric-unit">tasks</span></strong><span>frozen, execution-verified core</span></div>
+      <div class="metric"><strong><span class="metric-value">13</span><span class="metric-unit">models</span></strong><span>frontier, proprietary, and open-weight</span></div>
+      <div class="metric"><strong><span class="metric-value">12,999</span><span class="metric-unit">records</span></strong><span>released rollout archive, 33 arm files</span></div>
+      <div class="metric"><strong><span class="metric-value">100%</span><span class="metric-unit">oracle</span></strong><span>single-command solvability validation</span></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <h2>What QuoteBench Isolates</h2>
+        <p>Each task asks for one bash command, scored by final program state, not command text, so any correct quoting strategy passes. Two studies share the 56-task core.</p>
+      </div>
+      <div class="findings">
+        <article class="finding">
+          <span class="tag coral">Study A</span>
+          <h3>An extra parsing layer damages the same reply.</h3>
+          <p>Across all eight same-window configurations, replaying the same raw-conditioned reply through one added parser lowers success by 55.4&ndash;73.2 points. Disclosing that boundary before generation produces substantial compensation in six configurations.</p>
+        </article>
+        <article class="finding">
+          <span class="tag blue">Study B</span>
+          <h3>The native tool boundary is not neutral.</h3>
+          <p>Through the structured tool-call API real agents use, the effect ranges from a stable benefit (Opus-4.8) to a stable tax (Gemini-3.5-flash), and flips sign across BSD/GNU for others.</p>
+        </article>
+        <article class="finding">
+          <span class="tag teal">Adherence</span>
+          <h3>Schema-valid is not executable-correct.</h3>
+          <p>Tool-call adherence stays 98&ndash;100% while native accuracy spans 86&ndash;100%. Calling the right tool with valid arguments does not mean the command runs correctly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="run-band" id="leaderboard">
+      <div class="section" style="padding:60px 0">
+      <div class="section-head">
+        <div>
+          <h2>Leaderboard</h2>
+          <p>Which models survive a hostile transport contract. Auto-generated from the released result files on every publish.</p>
+        </div>
+      </div>
+      <style>
+        .lb{width:100%;border-collapse:collapse;font-size:.95rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+        .lb th,.lb td{padding:.45rem .8rem;text-align:left;border-bottom:1px solid var(--line)}
+        .lb th{font-weight:600;border-bottom:2px solid #b8ad96}
+        .lb tr:first-child td{font-weight:600}
+        .lb-note{font-size:.8rem;opacity:.7;margin-top:.5rem}
+      </style>
+      <!-- LEADERBOARD:START -->
+<h3 style="margin:0 0 .6rem">Study A &mdash; best-observed command-path scorecard</h3>
+<table class="lb"><thead><tr><th>model</th><th>best observed setting</th><th>control</th><th>hostile</th><th>all 56</th><th>hostile LOFO</th></tr></thead><tbody>
+<tr><td>GPT-5.5</td><td>xhigh</td><td>14/14</td><td>42/42</td><td><strong>100.0%</strong></td><td>[100.0, 100.0]</td></tr>
+<tr><td>Opus-5</td><td>xhigh</td><td>14/14</td><td>42/42</td><td><strong>100.0%</strong></td><td>[100.0, 100.0]</td></tr>
+<tr><td>Fable-5</td><td>max</td><td>14/14</td><td>42/42</td><td><strong>100.0%</strong></td><td>[100.0, 100.0]</td></tr>
+<tr><td>GPT-5.6-sol</td><td>high</td><td>14/14</td><td>41/42</td><td><strong>98.2%</strong></td><td>[97.4, 100.0]</td></tr>
+<tr><td>Opus-4.8</td><td>max</td><td>12/14</td><td>41/42</td><td><strong>94.6%</strong></td><td>[97.4, 100.0]</td></tr>
+<tr><td>Gemini-3.1-Pro</td><td>low</td><td>14/14</td><td>37/42</td><td><strong>91.1%</strong></td><td>[87.2, 89.7]</td></tr>
+<tr><td>Sonnet-4.6</td><td>high</td><td>9/14</td><td>27/42</td><td><strong>64.3%</strong></td><td>[61.5, 69.2]</td></tr>
+<tr><td>Gemini-3.5-Flash</td><td>medium</td><td>10/14</td><td>26/42</td><td><strong>64.3%</strong></td><td>[59.0, 66.7]</td></tr>
+<tr><td>Haiku-4.5</td><td>medium</td><td>8/14</td><td>13/42</td><td><strong>37.5%</strong></td><td>[28.2, 33.3]</td></tr>
+<tr><td>Qwen3.5-27B</td><td>non-think</td><td>8/14</td><td>9/42</td><td><strong>30.4%</strong></td><td>[15.4, 23.1]</td></tr>
+<tr><td>Qwen3.5-4B</td><td>think</td><td>5/14</td><td>7/42</td><td><strong>21.4%</strong></td><td>[10.3, 17.9]</td></tr>
+<tr><td>Qwen3.5-9B</td><td>non-think</td><td>5/14</td><td>5/42</td><td><strong>17.9%</strong></td><td>[5.1, 12.8]</td></tr>
+<tr><td>Gemini-3.1-Flash-Lite</td><td>default</td><td>6/14</td><td>2/42</td><td><strong>14.3%</strong></td><td>[2.6, 5.1]</td></tr>
+</tbody></table>
+<p class="lb-note">Trial-0 matched-nested final-state success on the same 56-task core in the pinned GNU/Linux replay. Updated 2026-08-05. Each base model contributes its highest-scoring measured setting; ties prefer default, then lower reported output tokens. This is a descriptive best-observed summary.</p>
+<h3 style="margin:1.6rem 0 .6rem">Study B &mdash; provider-native shell-tool campaign</h3>
+<table class="lb"><thead><tr><th>model configuration</th><th>paired task–rung trials</th><th>raw</th><th>native</th><th>&Delta;</th></tr></thead><tbody>
+<tr><td>Opus-4.8</td><td>840</td><td>95.4%</td><td><strong>98.0%</strong></td><td>+2.6</td></tr>
+<tr><td>Opus-5</td><td>840</td><td>98.2%</td><td><strong>97.4%</strong></td><td>-0.8</td></tr>
+<tr><td>Fable-5</td><td>840</td><td>99.3%</td><td><strong>97.1%</strong></td><td>-2.1</td></tr>
+<tr><td>Gemini-3.1-Pro</td><td>504</td><td>98.8%</td><td><strong>95.0%</strong></td><td>-3.8</td></tr>
+<tr><td>GPT-5.6-sol</td><td>672</td><td>96.9%</td><td><strong>94.3%</strong></td><td>-2.5</td></tr>
+<tr><td>Gemini-3.5-Flash</td><td>672</td><td>95.7%</td><td><strong>85.7%</strong></td><td>-10.0</td></tr>
+</tbody></table>
+<p class="lb-note">GNU replay, averaged over every measured effort rung and three trials per task/protocol cell. Updated 2026-08-05. This campaign measures a structured shell-tool boundary and is not numerically commensurable with the best-observed Study-A scorecard.</p>
+<!-- LEADERBOARD:END -->
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="section-head">
+        <h2>Headline Charts</h2>
+        <p>The two studies, on the reproducible GNU/Linux toolchain (macOS/BSD companion numbers are in the paper).</p>
+      </div>
+      <div class="charts">
+        <figure class="wide">
+          <img src="assets/crossover-decomposition.png" alt="Generation-contract by execution-transport crossover decomposition">
+          <figcaption><strong>Study A: four-cell crossover.</strong><span>Fixed-reply damage and contract-conditioned compensation can nearly cancel in a matched-path score.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/native-reliability.png" alt="Cells passing all three trials under raw and native execution">
+          <figcaption><strong>Study B: reliability.</strong><span>Native shifts the flakiness gap in opposite directions per model.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/native-effort.png" alt="Native minus raw pass rate across each model effort ladder">
+          <figcaption><strong>Study B: effort interaction.</strong><span>Opus gains most at low effort; Gemini-3.5-flash's tax grows with effort.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="run-band" id="run">
+      <div class="run-grid">
+        <div>
+          <h2>Run It Locally</h2>
+          <p class="body-copy">The core benchmark uses Python standard library only. The public artifact validates tasks and scores supplied generations; model access remains outside the release.</p>
+        </div>
+        <pre><code>python3 -m quotebench validate --executor docker
+python3 -m quotebench score \
+  --input generations.jsonl --out scored.jsonl --executor docker</code></pre>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Project Files</h2>
+        <p>Start from the spec if you want the benchmark design, or the datasheet if you need release metadata.</p>
+      </div>
+      <div class="docs">
+        <a class="doc-link" href="quickstart.html"><strong>Quickstart</strong><span>Commands for validation and scoring supplied generations.</span></a>
+        <a class="doc-link" href="spec.html"><strong>Specification</strong><span>Task model, contracts, metrics, and validity checks.</span></a>
+        <a class="doc-link" href="relatedwork.html"><strong>Related Work</strong><span>Why quoting is not isolated by existing terminal benchmarks.</span></a>
+        <a class="doc-link" href="citation.html"><strong>Citation</strong><span>Citation metadata and attribution guidance.</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Released under Apache-2.0. Author list and formal acknowledgements will be updated with the project paper. If you use QuoteBench in research, reporting, evaluation, derivative benchmarks, or public comparisons, cite the project.
+  </footer>
+</body>
+</html>

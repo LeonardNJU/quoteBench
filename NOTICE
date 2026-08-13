@@ -1,0 +1,7 @@
+QuoteBench
+Copyright 2026 QuoteBench authors
+
+QuoteBench is a benchmark for isolating shell quoting/escaping skill in LLM
+agents. If you use QuoteBench in research, reporting, evaluation, derivative
+benchmarks, or public comparisons, please cite the repository metadata. Formal
+paper metadata is pending.
