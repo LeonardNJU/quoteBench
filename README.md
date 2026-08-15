@@ -4,7 +4,7 @@
 execution-verified benchmark for whether one-shot Bash programs preserve literal
 intent across generation contracts and downstream command transport.
 
-[Project page](https://quotebench.lsamc.website/) · [GitHub](https://github.com/LeonardNJU/quoteBench) · [Rollout dataset](https://huggingface.co/datasets/lsamc/QuoteBench-Rollouts)
+[Paper](https://arxiv.org/abs/2608.13547) · [Hugging Face Paper Page](https://huggingface.co/papers/2608.13547) · [Project page](https://quotebench.lsamc.website/) · [GitHub](https://github.com/LeonardNJU/quoteBench) · [Rollout dataset](https://huggingface.co/datasets/lsamc/QuoteBench-Rollouts)
 
 ## What QuoteBench measures
 
