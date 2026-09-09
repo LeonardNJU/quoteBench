@@ -311,7 +311,7 @@
 
     .findings {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
     }
 
@@ -355,6 +355,13 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
+      align-items: start;
+    }
+
+    .charts img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
     .chart-tabs {
@@ -622,7 +629,7 @@
     <div class="hero-copy">
       <p class="eyebrow">LLM agent evaluation</p>
       <h1>QuoteBench</h1>
-      <p class="lead">An execution-verified benchmark that crosses generation contract with command transport, exposing failures that matched-path scores can hide.</p>
+      <p class="lead">QuoteBench holds a model's Bash command fixed and replays it through one added parser, then lets the model see that boundary. The crossover separates transport damage from contract-conditioned compensation and shows when a matched score hides both.</p>
       <p class="eyebrow">Accepted at the REALM workshop, EMNLP 2026</p>
       <div class="hero-actions">
         <a class="button primary" href="https://arxiv.org/abs/2608.13547">Read the paper</a>
@@ -632,9 +639,9 @@
         <a class="button secondary" href="datasheet.html">Read datasheet</a>
       </div>
     </div>
-    <div class="hero-chart" aria-label="Native tool boundary headline chart">
-      <img src="assets/native-effects.png" alt="Native minus raw pass-rate effects per model on BSD and GNU">
-      <div class="chart-callout">The structured tool boundary is not neutral: it helps some models, hurts others, and can flip sign across execution dialects.</div>
+    <div class="hero-chart" aria-label="Crossover decomposition headline chart">
+      <img src="assets/crossover-decomposition.png" alt="Generation-contract by execution-transport crossover with the GPT-5.6-sol worked example">
+      <div class="chart-callout">GPT-5.6-sol: −64.3 points of transport damage and +60.7 points of compensation net to a −3.6 matched gap.</div>
     </div>
   </header>
 
@@ -650,24 +657,29 @@
   <main>
     <section class="section">
       <div class="section-head">
-        <h2>What QuoteBench Isolates</h2>
-        <p>Each task asks for one bash command, scored by final program state, not command text, so any correct quoting strategy passes. Two studies share the 56-task core.</p>
+        <h2>What the crossover shows</h2>
+        <p>Each task asks for one Bash command and is scored by exact final state, so any correct quoting strategy passes. Eight same-window configurations supply the controlled evidence.</p>
       </div>
       <div class="findings">
         <article class="finding">
-          <span class="tag coral">Study A</span>
-          <h3>An extra parsing layer damages the same reply.</h3>
-          <p>Across all eight same-window configurations, replaying the same raw-conditioned reply through one added parser lowers success by 55.4&ndash;73.2 points. Disclosing that boundary before generation recovers 30.4–60.7 points in six configurations and zero or slightly negative in the other two.</p>
+          <span class="tag coral">Transport damage</span>
+          <h3>The same command loses 55&ndash;73 points behind one added parser.</h3>
+          <p>Replaying each raw reply through one added <code>bash -c</code> layer lowers exact-final-state success by 55.4&ndash;73.2 points in all eight configurations. A real <code>ssh</code> boundary reproduces the damage for seven of eight to the decimal.</p>
         </article>
         <article class="finding">
-          <span class="tag blue">Study B</span>
-          <h3>The native tool boundary is not neutral.</h3>
-          <p>Through the structured tool-call API real agents use, the effect ranges from a stable benefit (Opus-4.8) to a stable tax (Gemini-3.5-flash), and flips sign across BSD/GNU for others.</p>
+          <span class="tag blue">Compensation</span>
+          <h3>Seeing the boundary recovers 30&ndash;61 points for six configurations.</h3>
+          <p>Replies generated under a disclosed-boundary contract recover 30.4&ndash;60.7 points on the nested path for six configurations and zero or slightly negative for the other two. Two further public draws keep every damage negative and change no compensation sign.</p>
         </article>
         <article class="finding">
-          <span class="tag teal">Adherence</span>
-          <h3>Schema-valid is not executable-correct.</h3>
-          <p>Tool-call adherence stays 98&ndash;100% while native accuracy spans 86&ndash;100%. Calling the right tool with valid arguments does not mean the command runs correctly.</p>
+          <span class="tag teal">Matched scores</span>
+          <h3>A matched score can hide the dependency.</h3>
+          <p>The two effects cancel at one frontier configuration: GPT-5.6-sol&rsquo;s matched gap of &minus;3.6 hides &minus;64.3 damage and +60.7 compensation. Elsewhere the matched score falls with the path, and the deployment configuration reorders models (Kendall &tau; 0.57 between raw and nested orderings).</p>
+        </article>
+        <article class="finding">
+          <span class="tag coral">Attribution</span>
+          <h3>A known hazard, attributed to its cause.</h3>
+          <p>Quoting failures are documented; QuoteBench holds the reply fixed and changes one parser, so each loss is attributed to transport or to generation. A fixed-commit survey of six agent systems finds boundaries applied downstream of the stated contract, such as Codex executing a native command field as <code>shell -c</code>. Correct escaping or a temporary script removes the effect, and evaluations should report contract, execution path, operating point, and validator.</p>
         </article>
       </div>
     </section>
@@ -676,8 +688,8 @@
       <div class="section" style="padding:60px 0">
       <div class="section-head">
         <div>
-          <h2>Leaderboard</h2>
-          <p>Which models survive a hostile transport contract. Auto-generated from the released result files on every publish.</p>
+          <h2>Results</h2>
+          <p>The same-window crossover is the controlled evidence. The scorecards below it are descriptive summaries of the released result files.</p>
         </div>
       </div>
       <style>
@@ -687,8 +699,20 @@
         .lb tr:first-child td{font-weight:600}
         .lb-note{font-size:.8rem;opacity:.7;margin-top:.5rem}
       </style>
+<h3 style="margin:0 0 .6rem">Study A &mdash; same-window crossover (controlled)</h3>
+<table class="lb"><thead><tr><th>model</th><th>RR</th><th>RN</th><th>NR</th><th>NN</th><th>damage</th><th>compensation</th><th>matched gap</th></tr></thead><tbody>
+<tr><td>GPT-5.6-sol</td><td>94.6</td><td>30.4</td><td>55.4</td><td>91.1</td><td>&minus;64.3</td><td>+60.7</td><td>&minus;3.6</td></tr>
+<tr><td>GPT-5.5</td><td>100.0</td><td>28.6</td><td>50.0</td><td>89.3</td><td>&minus;71.4</td><td>+60.7</td><td>&minus;10.7</td></tr>
+<tr><td>Opus-5</td><td>96.4</td><td>30.4</td><td>42.9</td><td>89.3</td><td>&minus;66.1</td><td>+58.9</td><td>&minus;7.1</td></tr>
+<tr><td>Gemini-3.1-Pro</td><td>98.2</td><td>25.0</td><td>33.9</td><td>80.4</td><td>&minus;73.2</td><td>+55.4</td><td>&minus;17.9</td></tr>
+<tr><td>Gemini-3.5-Flash</td><td>96.4</td><td>28.6</td><td>67.9</td><td>58.9</td><td>&minus;67.9</td><td>+30.4</td><td>&minus;37.5</td></tr>
+<tr><td>Opus-4.8</td><td>91.1</td><td>26.8</td><td>62.5</td><td>57.1</td><td>&minus;64.3</td><td>+30.4</td><td>&minus;33.9</td></tr>
+<tr><td>Qwen3.5-27B</td><td>85.7</td><td>30.4</td><td>83.9</td><td>30.4</td><td>&minus;55.4</td><td>0.0</td><td>&minus;55.4</td></tr>
+<tr><td>Gemini-3.1-Flash-Lite</td><td>78.6</td><td>19.6</td><td>80.4</td><td>14.3</td><td>&minus;58.9</td><td>&minus;5.4</td><td>&minus;64.3</td></tr>
+</tbody></table>
+<p class="lb-note">Trial 0, GNU replay, percentages of 56 tasks. RR/RN: raw reply on the raw/nested path; NR/NN: disclosed-boundary reply on the raw/nested path. Damage = RN &minus; RR, compensation = NN &minus; RN, matched gap = NN &minus; RR.</p>
       <!-- LEADERBOARD:START -->
-<h3 style="margin:0 0 .6rem">Study A &mdash; best-observed command-path scorecard</h3>
+<h3 style="margin:1.6rem 0 .6rem">Study A &mdash; best-observed scorecard (descriptive)</h3>
 <table class="lb"><thead><tr><th>model</th><th>best observed setting</th><th>control</th><th>hostile</th><th>all 56</th><th>hostile LOFO</th></tr></thead><tbody>
 <tr><td>GPT-5.5</td><td>xhigh</td><td>14/14</td><td>42/42</td><td><strong>100.0%</strong></td><td>[100.0, 100.0]</td></tr>
 <tr><td>Opus-5</td><td>xhigh</td><td>14/14</td><td>42/42</td><td><strong>100.0%</strong></td><td>[100.0, 100.0]</td></tr>
@@ -705,7 +729,7 @@
 <tr><td>Gemini-3.1-Flash-Lite</td><td>default</td><td>6/14</td><td>2/42</td><td><strong>14.3%</strong></td><td>[2.6, 5.1]</td></tr>
 </tbody></table>
 <p class="lb-note">Trial-0 matched-nested final-state success on the same 56-task core in the pinned GNU/Linux replay. Updated 2026-08-05. Each base model contributes its highest-scoring measured setting; ties prefer default, then lower reported output tokens. This is a descriptive best-observed summary.</p>
-<h3 style="margin:1.6rem 0 .6rem">Study B &mdash; provider-native shell-tool campaign</h3>
+<h3 style="margin:1.6rem 0 .6rem">Study B &mdash; provider-native shell-tool campaign (observational)</h3>
 <table class="lb"><thead><tr><th>model configuration</th><th>paired task–rung trials</th><th>raw</th><th>native</th><th>&Delta;</th></tr></thead><tbody>
 <tr><td>Opus-4.8</td><td>840</td><td>95.4%</td><td><strong>98.0%</strong></td><td>+2.6</td></tr>
 <tr><td>Opus-5</td><td>840</td><td>98.2%</td><td><strong>97.4%</strong></td><td>-0.8</td></tr>
@@ -722,20 +746,16 @@
     <section class="section" id="results">
       <div class="section-head">
         <h2>Headline Charts</h2>
-        <p>The two studies, on the reproducible GNU/Linux toolchain (macOS/BSD companion numbers are in the paper).</p>
+        <p>Study A on the reproducible GNU/Linux toolchain; BSD companion numbers and the Study B figures are in the paper.</p>
       </div>
       <div class="charts">
         <figure class="wide">
-          <img src="assets/crossover-decomposition.png" alt="Generation-contract by execution-transport crossover decomposition">
-          <figcaption><strong>Study A: four-cell crossover.</strong><span>Fixed-reply damage and contract-conditioned compensation cancel at one frontier configuration; elsewhere the matched-path score falls with the path.</span></figcaption>
+          <img src="assets/effort-success.png" alt="Matched nested success at each exposed effort setting, by model group">
+          <figcaption><strong>Study A: effort ladders.</strong><span>Matched nested success at each exposed effort setting. Ladders are non-monotonic, and the unset default lands on a different rung per provider.</span></figcaption>
         </figure>
-        <figure>
-          <img src="assets/native-reliability.png" alt="Cells passing all three trials under raw and native execution">
-          <figcaption><strong>Study B: reliability.</strong><span>Native shifts the flakiness gap in opposite directions per model.</span></figcaption>
-        </figure>
-        <figure>
-          <img src="assets/native-effort.png" alt="Native minus raw pass rate across each model effort ladder">
-          <figcaption><strong>Study B: effort interaction.</strong><span>Opus gains most at low effort; Gemini-3.5-flash's tax grows with effort.</span></figcaption>
+        <figure class="wide">
+          <img src="assets/effort-crossover.png" alt="Crossover cells at every measured effort rung for six configurations">
+          <figcaption><strong>Study A: crossover at every rung.</strong><span>Damage stays negative and compensation keeps its sign along each ladder; trial-0 ladders move nested-replay pass rates by at most 5.4 points.</span></figcaption>
         </figure>
       </div>
     </section>
@@ -743,12 +763,17 @@
     <section class="run-band" id="run">
       <div class="run-grid">
         <div>
-          <h2>Run It Locally</h2>
-          <p class="body-copy">The core benchmark uses Python standard library only. The public artifact validates tasks and scores supplied generations; model access remains outside the release.</p>
+          <h2>Run your own model</h2>
+          <p class="body-copy">The public package generates, executes, and scores with the Python standard library and Docker. Point it at any OpenAI-compatible endpoint, run the two contracts, and the crossover command prints RR, RN, NR, NN, damage, and compensation for your model. The <a href="https://github.com/LeonardNJU/quoteBench/blob/main/docs/RUN_YOUR_MODEL.md">guide</a> has the details and the cost per run.</p>
         </div>
-        <pre><code>python3 -m quotebench validate --executor docker
-python3 -m quotebench score \
-  --input generations.jsonl --out scored.jsonl --executor docker</code></pre>
+        <pre><code>export QUOTEBENCH_API_KEY=...
+python3 -m quotebench run --model MODEL_ID \
+  --base-url https://api.example.com/v1 \
+  --contract raw --out raw.jsonl --executor docker
+python3 -m quotebench run --model MODEL_ID \
+  --base-url https://api.example.com/v1 \
+  --contract nested-shell-v2 --out disclosed.jsonl --executor docker
+python3 -m quotebench crossover --raw raw.jsonl --disclosed disclosed.jsonl</code></pre>
       </div>
     </section>
 

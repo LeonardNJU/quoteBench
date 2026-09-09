@@ -64,20 +64,33 @@
     <section class="hero">
       <p class="eyebrow">Quickstart</p>
       <h1>Run QuoteBench</h1>
-      <p class="lead">Validate the frozen core and score supplied generations by exact final-state outcomes.</p>
+      <p class="lead">Validate the frozen core, run your own model through both contracts, and decompose the result into transport damage and compensation.</p>
     </section>
     <section class="section">
-      <h2>Validate the Benchmark</h2>
+      <h2>1. Validate the frozen core</h2>
+      <p>Every task's oracle command must pass its exact-final-state validator before anything else runs.</p>
       <pre><code>python3 -m quotebench validate --executor docker</code></pre>
     </section>
     <section class="section">
-      <h2>Prepare Generations</h2>
-      <p>Supply one JSON object per line with <code class="inline">task_id</code>,
-      <code class="inline">contract</code>, and <code class="inline">reply</code>.
-      Model access is deliberately outside the released evaluation artifact.</p>
+      <h2>2. Run your own model</h2>
+      <p>Point the runner at any OpenAI-compatible chat-completions endpoint. Run the raw contract and the disclosed-boundary contract; each run generates one command per task, executes it on its own transport, and scores the final state. Expect 56 calls per contract per trial.</p>
+      <pre><code>export QUOTEBENCH_API_KEY=...
+python3 -m quotebench run --model MODEL_ID \
+  --base-url https://api.example.com/v1 \
+  --contract raw --out raw.jsonl --executor docker
+python3 -m quotebench run --model MODEL_ID \
+  --base-url https://api.example.com/v1 \
+  --contract nested-shell-v2 --out disclosed.jsonl --executor docker</code></pre>
     </section>
     <section class="section">
-      <h2>Score Results</h2>
+      <h2>3. Decompose the crossover</h2>
+      <p>The crossover command replays every stored reply through both transports and prints RR, RN, NR, NN, transport damage (RN &minus; RR), contract-conditioned compensation (NN &minus; RN), and the matched gap (NN &minus; RR) for your model.</p>
+      <pre><code>python3 -m quotebench crossover --raw raw.jsonl --disclosed disclosed.jsonl</code></pre>
+      <p>The <a href="https://github.com/LeonardNJU/quoteBench/blob/main/docs/RUN_YOUR_MODEL.md">run-your-model guide</a> covers flags, resume, and how to read the four cells.</p>
+    </section>
+    <section class="section">
+      <h2>Score generations you already have</h2>
+      <p>Supply one JSON object per line with <code class="inline">task_id</code>, <code class="inline">contract</code>, and <code class="inline">reply</code>; the scorer executes each reply on the transport its contract implies.</p>
       <pre><code>python3 -m quotebench score \
   --input generations.jsonl --out scored.jsonl --executor docker</code></pre>
     </section>

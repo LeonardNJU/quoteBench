@@ -77,11 +77,15 @@ def generated_reply(
 ) -> str:
     """Recover the exact model reply before the execution contract was applied.
 
-    Early Study-A raw records predate ``raw_reply`` retention. For those records,
+    Generation records written by the public ``run`` command carry the reply at
+    top level. Private runner records carry it in the terminal attempt. Early
+    Study-A raw records predate ``raw_reply`` retention. For those records,
     the executed command is exactly the raw reply by construction, so the
     command itself is a lossless fallback. A legacy nested record can likewise
     be inverted only when it has the exact harness prefix/suffix.
     """
+    if isinstance(record.get("reply"), str):
+        return str(record["reply"])
     attempt = terminal_attempt(record)
     reply = attempt.get("raw_reply")
     if isinstance(reply, str):

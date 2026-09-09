@@ -8,6 +8,8 @@ intent across generation contracts and downstream command transport.
 
 Accepted at the REALM workshop at EMNLP 2026 (non-archival); cite the arXiv version.
 
+To evaluate your own model, follow [docs/RUN_YOUR_MODEL.md](docs/RUN_YOUR_MODEL.md): two `run` commands (raw and disclosed-boundary contract) and one `crossover` command print RR, RN, NR, NN, damage, and compensation.
+
 ## What QuoteBench measures
 
 The frozen core contains **56 tasks across 14 operation families**. Each task is

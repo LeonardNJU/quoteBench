@@ -28,6 +28,7 @@ python3 -m quotebench score \
 
 Evaluators may produce this JSONL format with any model-access system they control.
 Fresh acquisition is not required to replay or validate the paper's frozen evidence.
+The `run` command in `docs/RUN_YOUR_MODEL.md` writes this format directly.
 
 ## 4. Verify released rollout records
 
@@ -49,3 +50,9 @@ count.
 The public rollout dataset contains the auditable stored-reply campaigns used for the
 released analyses, together with a schema, manifest, and SHA-256 checksums. Private
 payloads are intentionally withheld to preserve the held-out split.
+
+## 5. Run your own model
+
+`docs/RUN_YOUR_MODEL.md` describes the three commands that collect raw and
+disclosed-nested generations from an OpenAI-compatible chat completions API and
+replay them through both transports to produce the RR/RN/NR/NN crossover table.

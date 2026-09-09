@@ -65,31 +65,38 @@
   <main>
     <section class="hero">
       <p class="eyebrow">Related work</p>
-      <h1>The Gap QuoteBench Targets</h1>
-      <p class="lead">Existing terminal and command-generation benchmarks exercise shell quoting incidentally; QuoteBench isolates it as the measured skill.</p>
+      <h1>Where QuoteBench sits</h1>
+      <p class="lead">Existing terminal and command-generation benchmarks score the generated program once. QuoteBench holds that program fixed, changes the execution transport, and attributes each loss to transport or to generation.</p>
     </section>
     <section class="section">
-      <h2>Direct Competitors</h2>
-      <p>None found. Terminal benchmarks and NL-to-command datasets either do not isolate quoting, or use metrics that erase the argument values where quoting failures occur.</p>
-    </section>
-    <section class="section">
-      <h2>Near Misses</h2>
+      <h2>What neighbouring benchmarks measure</h2>
+      <p>Each row follows the benchmark's own description. <em>Interface varied</em>: the same task is evaluated under more than one execution interface; <em>regenerated</em> means the model produces a fresh output per interface. <em>Replay</em>: identical model output is re-executed under a changed interface. <em>Quoting</em>: quoting and escaping hazards are the stated target.</p>
       <table>
-        <thead><tr><th>Work</th><th>Relation</th></tr></thead>
+        <thead><tr><th>Work</th><th>Unit scored</th><th>Correctness signal</th><th>Interface varied</th><th>Replay</th><th>Quoting</th></tr></thead>
         <tbody>
-          <tr><td>Terminal-Bench / TB2.0</td><td>State-based terminal benchmark; quoting appears incidentally, not as the isolated target.</td></tr>
-          <tr><td>NL2SH-ALFA</td><td>Closest one-shot command synthesis methodology; motivates machine-constructed, execution-verified oracles.</td></tr>
-          <tr><td>InterCode-Bash</td><td>Useful verification precedent and gold-data cautionary tale.</td></tr>
-          <tr><td>NLC2CMD / NL2Bash</td><td>Template metrics can erase argument-level quoting mistakes.</td></tr>
-          <tr><td>tau-bench</td><td>Motivates reliability-style reporting for tail-event failures.</td></tr>
+          <tr><td>NL2Bash</td><td>NL to one-line Bash, 9,305 pairs</td><td>structure and full-command accuracy against references</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>NLC2CMD</td><td>NL to Bash</td><td>utility and flag match, arguments ignored</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>InterCode-Bash</td><td>interactive Bash, 200 tasks</td><td>execution: output similarity, file-system diff, file hashes against a gold command</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>NL2SH-ALFA</td><td>NL to Bash, 600 test pairs</td><td>execution plus LLM-judged functional equivalence</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>BashBench</td><td>Bash commands and scripts, 952</td><td>execution test suite, bash -n, ShellCheck</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>Terminal-Bench</td><td>agent terminal tasks</td><td>per-task test script</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>TerminalWorld</td><td>agent terminal tasks, 1,530</td><td>test assertions on final state</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>EnvBench</td><td>environment setup, 994 repositories</td><td>static import or compile check</td><td>no</td><td>no</td><td>no</td></tr>
+          <tr><td>SWE-agent</td><td>SWE-bench issues</td><td>hidden unit tests</td><td>ACI versus shell, regenerated</td><td>no</td><td>no</td></tr>
+          <tr><td>OctoBench</td><td>repository-grounded coding, 217 tasks</td><td>objective checklist items</td><td>three scaffolds, regenerated</td><td>no</td><td>no</td></tr>
+          <tr><td><strong>QuoteBench</strong></td><td>one-shot Bash, 56 tasks</td><td>exact final state, audited validators</td><td>contract &times; transport, crossed; real ssh</td><td><strong>yes</strong></td><td><strong>yes</strong></td></tr>
         </tbody>
       </table>
+    </section>
+    <section class="section">
+      <h2>Closest in prescription</h2>
+      <p>Concurrent work shows that swapping an agent's whole harness reorders leaderboards and asks evaluators to disclose the harness. Because it replaces context handling, retry, and verification together, it measures variance and cannot attribute a reversal to a mechanism. QuoteBench fixes the model output and changes a single parser, so the matched score decomposes into transport damage and contract-conditioned compensation. Prompt-format sensitivity work establishes that scores move with a nuisance variable, but each format is regenerated, so the spread cannot be separated into what the channel destroyed and what the model produced differently.</p>
     </section>
     <section class="section">
       <h2>Why the Failure Mode Is Real</h2>
       <ul>
         <li>Public issue trackers for coding agents repeatedly document heredoc, apostrophe, nested-shell, and cross-shell wrapping failures.</li>
-        <li>Agent frameworks often steer users away from shell editing paths and toward structured editor tools, which avoids rather than measures the skill.</li>
+        <li>Agent frameworks often steer users away from shell editing paths and toward structured editor tools, which removes the skill from the score.</li>
         <li>QuoteBench removes common escape hatches so quoting itself becomes visible in the score.</li>
       </ul>
     </section>
