@@ -6,6 +6,8 @@ intent across generation contracts and downstream command transport.
 
 [Paper](https://arxiv.org/abs/2608.13547) · [Hugging Face Paper Page](https://huggingface.co/papers/2608.13547) · [Project page](https://quotebench.lsamc.website/) · [GitHub](https://github.com/LeonardNJU/quoteBench) · [Rollout dataset](https://huggingface.co/datasets/lsamc/QuoteBench-Rollouts)
 
+Accepted at the REALM workshop at EMNLP 2026 (non-archival); cite the arXiv version.
+
 ## What QuoteBench measures
 
 The frozen core contains **56 tasks across 14 operation families**. Each task is
