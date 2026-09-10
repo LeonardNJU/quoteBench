@@ -28,11 +28,12 @@ generation from compensation learned under the disclosed contract.
   all eight same-window configurations.
 - Six of eight configurations recover **30.4–60.7 points** through
   contract-conditioned compensation.
-- **5/26 strictly comparable model
-  pairs (19.2%) reverse order** between the two matched command
-  paths.
-- Three complete draws for GPT-5.5, GPT-5.6-sol, and Gemini-3.1-Pro preserve the sign
-  of both damage and compensation.
+- **The two matched command paths order models differently** (Kendall rank
+  correlation 0.57, task-cluster bootstrap interval [0.32, 0.82]). One reversal
+  among 26 comparable pairs is unambiguous; the others sit on
+  single-task margins.
+- Three public draws for all eight same-window configurations keep damage negative
+  in every configuration and draw and change no compensation sign.
 - Compensation trained for the targeted wrapper does not transfer reliably to a
   single-quoted or double-nested wrapper.
 - Executing stored replies as temporary scripts recovers **50.0–78.6 points** without
