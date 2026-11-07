@@ -28,9 +28,9 @@ generation from compensation learned under the disclosed contract.
 - Six of eight configurations recover **30.4–60.7 points** through
   contract-conditioned compensation.
 - **The two matched command paths order models differently** (Kendall rank
-  correlation 0.57, task-cluster bootstrap interval [0.32, 0.82]). One reversal
-  among 26 comparable pairs is unambiguous; the others sit on
-  single-task margins.
+  correlation 0.57, task-cluster bootstrap interval [0.32, 0.82]). Strict reversals depend
+  on the scoring rule, no pair reverses in every draw, and we claim no established
+  reversal: the raw-path intervals for reversing pairs all include zero.
 - Three public draws for all eight same-window configurations keep damage negative
   in every configuration and draw and change no compensation sign.
 - Compensation trained for the targeted wrapper does not transfer reliably to a
